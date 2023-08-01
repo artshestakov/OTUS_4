@@ -7,7 +7,6 @@ set (CMAKE_CXX_STANDARD 17)
 add_executable(homework_4
     main.cpp
 	printer.cpp
-	utils.cpp
 )
 
 target_include_directories(homework_4
