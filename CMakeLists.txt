@@ -16,6 +16,6 @@ target_include_directories(homework_4
 
 install(TARGETS homework_4 RUNTIME DESTINATION bin)
 set(CPACK_GENERATOR DEB)
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_FILE_NAME "homework_4")
 set(CPACK_PACKAGE_CONTACT art.shestakov@icloud.com)
 include(CPack)
