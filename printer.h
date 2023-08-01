@@ -1,9 +1,12 @@
 #pragma once
 //-----------------------------------------------------------------------------
-#include "utils.h"
 #include <iomanip>
 #include <tuple>
 #include <type_traits>
+#include <array>
+#include <vector>
+#include <list>
+#include <iostream>
 //-----------------------------------------------------------------------------
 template <class T, class Enable = void>
 struct PrintImpl
@@ -15,38 +18,28 @@ struct PrintImpl
 };
 //-----------------------------------------------------------------------------
 template <class T>
-struct PrintImpl<T, std::enable_if_t<std::is_same_v<int8_t, T>>>
+struct PrintImpl<T, std::enable_if_t<
+    std::is_same_v<int8_t, T> ||
+    std::is_same_v<int16_t, T> ||
+    std::is_same_v<int32_t, T> ||
+    std::is_same_v<int64_t, T>>>
 {
     static void print_ip(T value)
     {
-        std::cout << (value & 0xFF) << std::endl;
-    }
-};
-//-----------------------------------------------------------------------------
-template <class T>
-struct PrintImpl<T, std::enable_if_t<std::is_same_v<int16_t, T>>>
-{
-    static void print_ip(T value)
-    {
-        std::cout << (double)value << std::endl;
-    }
-};
-//-----------------------------------------------------------------------------
-template <class T>
-struct PrintImpl<T, std::enable_if_t<std::is_same_v<int32_t, T>>>
-{
-    static void print_ip(T value)
-    {
-        print_ip_from_int(value);
-    }
-};
-//-----------------------------------------------------------------------------
-template <class T>
-struct PrintImpl<T, std::enable_if_t<std::is_same_v<int64_t, T>>>
-{
-    static void print_ip(T value)
-    {
-        print_ip_from_int(value);
+        constexpr int array_size = sizeof(value);
+        std::array<int, array_size> arr;
+
+        for (int i = 0, c = sizeof(value), step = 0; i < c; ++i, step += 8)
+        {
+            arr[i] = step == 0 ?
+                (int)(value & 0xFF) :
+                (int)((value >> step) & 0xFF);
+        }
+
+        for (int i = array_size - 1; i >= 0; --i)
+        {
+            std::cout << arr[i] << (i > 0 ? '.' : '\n');
+        }
     }
 };
 //-----------------------------------------------------------------------------
@@ -60,20 +53,14 @@ struct PrintImpl<T, std::enable_if_t<std::is_same_v<std::string, T>>>
 };
 //-----------------------------------------------------------------------------
 template <class T>
-struct PrintImpl<T, std::enable_if_t<std::is_same_v<std::vector<int>, T>>>
+struct PrintImpl<T, std::enable_if_t<std::is_same_v<std::vector<int>, T> || std::is_same_v<std::list<short>, T>>>
 {
-    static void print_ip(const T &value)
+    static void print_ip(const T& contaner)
     {
-        print_contaner(value);
-    }
-};
-//-----------------------------------------------------------------------------
-template <class T>
-struct PrintImpl<T, std::enable_if_t<std::is_same_v<std::list<short>, T>>>
-{
-    static void print_ip(const T& value)
-    {
-        print_contaner(value);
+        for (auto It = contaner.begin(); It != contaner.end(); ++It)
+        {
+            std::cout << *It << (It != std::prev(contaner.end()) ? '.' : '\n');
+        }
     }
 };
 //-----------------------------------------------------------------------------
