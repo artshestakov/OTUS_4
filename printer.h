@@ -18,11 +18,7 @@ struct PrintImpl
 };
 //-----------------------------------------------------------------------------
 template <class T>
-struct PrintImpl<T, std::enable_if_t<
-    std::is_same_v<int8_t, T> ||
-    std::is_same_v<int16_t, T> ||
-    std::is_same_v<int32_t, T> ||
-    std::is_same_v<int64_t, T>>>
+struct PrintImpl<T, std::enable_if_t<std::is_integral_v<T>>>
 {
     static void print_ip(T value)
     {
